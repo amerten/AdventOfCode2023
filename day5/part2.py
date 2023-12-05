@@ -22,22 +22,17 @@ for line in data[2:]:
 location_nb = sys.maxsize
 seen = set()
 
-for i_s in range(0, len(seeds), 2):
-    s_from, s_range = seeds[i_s], seeds[i_s + 1]
-    print(s_from, s_range)
-    for seed in range(s_from, s_from + s_range):
-        if seed in seen:
-            continue
-        seen.add(seed)
-        i = 0
-        while i < len(chain) - 1:
-            source, destination = chain[i], chain[i + 1]
-            for s, d, r in m[source, destination]:
-                if s <= seed < (s + r):
-                    seed = d + seed - s
-                    break
-            i += 1
-        location_nb = min(location_nb, seed)
-
-print(location_nb)
-
+i = 0
+while True:
+    val = i
+    for j, destination in enumerate(chain[:0:-1]):
+        source = chain[len(chain) -1 - j - 1]
+        for s, d, r in m[source, destination]:
+            if d <= val < (d + r):
+                val = s + val - d
+                break
+    for k in range(0, len(seeds) - 1, 2):
+        if seeds[k] <= val < seeds[k] + seeds[k+1]:
+            print(i)
+            quit()
+    i += 1
