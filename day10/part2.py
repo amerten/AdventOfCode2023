@@ -1,6 +1,5 @@
 with open('input.txt') as f:
-    data = [line.strip() for line in f.readlines()]
-
+    data = [list(line.strip()) for line in f.readlines()]
 
 for r in range(len(data)):
     for c in range(len(data)):
@@ -29,25 +28,60 @@ def are_connected(p1, p2):
     return connected_top or connected_bottom or connected_right or connected_left
 
 
-distances = {}
+loop = []
 previous_position, current_position = None, start
 
-distance = 0
 while True:
     for d in ((0, 1), (0, -1), (1, 0), (-1, 0)):
         r, c = current_position[0] + d[0], current_position[1] + d[1]
         if r < 0 or r >= len(data) or c < 0 or c >= len(data[r]):
             continue
         if are_connected(current_position, (r, c)) and (r, c) != previous_position:
-            distance += 1
-            distances[(r, c)] = distance
             previous_position = current_position
             current_position = (r, c)
+            loop.append(previous_position)
             break
     if current_position == start:
         break
 
-for p in distances:
-    distances[p] = min(distances[p], len(distances) - distances[p])
+a, b = loop[1], loop[-1]
+if a[0] == start[0] + 1:  # a is below
+    if b[1] == start[1] - 1:  # b to left
+        s = "7"
+    elif b[1] == start[1] + 1:  # b to right
+        s = "F"
+    else:
+        s = "|"
+elif a[0] == start[0] - 1:  # a on top
+    if b[1] == start[1] - 1:  # b to left
+        s = "J"
+    elif b[1] == start[1] + 1:  # b to right
+        s = "L"
+    else:
+        s = "|"
+elif a[1] == start[0] + 1:  # a on right
+    if b[1] == start[1] - 1:  # b to left
+        s = "-"
+    elif b[0] == start[0] - 1:  # b on top
+        s = "L"
+    else:
+        s = "F"
+else:  # a is on left
+    if b[1] == start[1] + 1:  # b to right
+        s = "-"
+    elif b[0] == start[0] - 1:  # b on top
+        s = "J"
+    else:
+        s = "7"
+data[start[0]][start[1]] = s
 
-print(max(distances.values()))
+t = 0
+for r in range(len(data)):
+    is_inside = False
+    for c in range(len(data[r])):
+        if (r, c) in loop:
+            if data[r][c] in '|JL':
+                is_inside = not is_inside
+        else:
+            t += is_inside
+print(t)
