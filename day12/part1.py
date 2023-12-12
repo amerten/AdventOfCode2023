@@ -6,12 +6,8 @@ data = open(0).read().splitlines()
 
 def can_match(code, clues):
     m = re.findall('#+', code)
-    # print(m)
-    # print(code)
-    # print(clues)
-    # print(all(len(m[i]) == clues[i] for i in range(min(len(m), len(clues)))))
-    # print()
     return len(m) == len(clues) and all(len(m[i]) == clues[i] for i in range(len(clues)))
+
 
 def nb_arrangements(line):
     code, clues = line.split()
