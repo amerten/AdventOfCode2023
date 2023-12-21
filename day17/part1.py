@@ -1,33 +1,32 @@
-import sys
+from heapq import heappush, heappop
 
-# sys.setrecursionlimit(100000)
+grid = open(0).read().splitlines()
+end = len(grid) - 1, len(grid[0]) - 1
 
-blocks = open(0).read().splitlines()
-er, ec = len(blocks) - 1, len(blocks[0]) - 1
+visited = set()
+queue = [(0, 0, 0, 0, 1, 0)]
+while queue:
+    hl, r, c, dr, dc, d = heappop(queue)
 
-best = 1000000000000000000000
+    if (r, c) == end:
+        print(hl)
+        break
 
+    if (r, c, dr, dc, d) in visited:
+        continue
 
-def explore(node, visited):
-    global best
-    hl, d, r, c, dr, dc, f = node
-    if (r, c) == (er, ec):
-        best = min(best, hl)
-        return
-    if (r, c) in visited:
-        return
-    if d < 3 and 0 <= r + dr < len(blocks) and 0 <= c + dc < len(blocks[0]):
-        v = visited.union((r, c))
-        explore((hl + int(blocks[r + dr][c + dc]), d + 1, r + dr, c + dc, dr, dc, node), v)
-    if 0 <= r - dc < len(blocks) and 0 <= c + dr < len(blocks[0]):
-        v = visited.union((r, c))
-        explore((hl + int(blocks[r - dc][c + dr]), 1, r - dc, c + dr, -dc, dr, node), v)
-    if 0 <= r + dc < len(blocks) and 0 <= c - dr < len(blocks[0]):
-        v = visited.union((r, c))
-        explore((hl + int(blocks[r + dc][c - dr]), 1, r + dc, c - dr, dc, -dr, node), v)
+    visited.add((r, c, dr, dc, d))
 
+    nr, nc = r + dr, c + dc
+    if d < 3 and 0 <= nr < len(grid) and 0 <= nc < len(grid[0]):
+        new_node = (hl + int(grid[nr][nc]), nr, nc, dr, dc, d + 1)
+        heappush(queue, new_node)
 
-explore((0, 0, 0, 0, 1, 0, None), set())
-explore((0, 0, 0, 0, 0, 1, None), set())
-
-print(best)
+    lr, lc = r - dc, c + dr
+    if 0 <= lr < len(grid) and 0 <= lc < len(grid[0]):
+        new_node = (hl + int(grid[lr][lc]), lr, lc, -dc, dr, 1)
+        heappush(queue, new_node)
+    rr, rc = r + dc, c - dr
+    if 0 <= rr < len(grid) and 0 <= rc < len(grid[0]):
+        new_node = (hl + int(grid[rr][rc]), rr, rc, dc, -dr, 1)
+        heappush(queue, new_node)
