@@ -21,16 +21,17 @@ for r, line in enumerate(open(0).read().splitlines()):
         row[c] = '.'
         start = (r, c)
     grid.append(row)
-print(len(grid))
-t = []
-s = 5000 % len(grid)
-for i in range(3):
-    t.append(compute(grid, start, s + i * len(grid)))
-fx, fy, fz = t[0], t[1], t[2]
-x, y, z = s, s + len(grid), s + 2 * len(grid)
 
-for a in range(100):
-    for b in range(100):
-        for c in range(100):
-            if a*x*x + b*x + c == fx and a*y*y + b*y + c == fy and a*z*z + b*z + c == fz:
-                print(a, b, c)
+# -----------------------------------------------------------------------------------------------
+
+X = 26501365
+s = X % len(grid)
+
+x1, x2, x3 = s + 3 * len(grid), s + 4 * len(grid), s + 5 * len(grid)
+y1, y2, y3 = compute(grid, start, x1), compute(grid, start, x2), compute(grid, start, x3)
+
+a = (x1 * (y3 - y2) + x2 * (y1 - y3) + x3 * (y2 - y1)) / ((x1 - x2) * (x1 - x3) * (x2 - x3))
+b = (y2 - y1) / (x2 - x1) - a * (x1 + x2)
+c = y1 - a * x1 * x1 - b * x1
+
+print(int(a * X * X + b * X + c))
